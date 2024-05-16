@@ -8,12 +8,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
+
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var showToast by remember { mutableStateOf(false) }
+
+    var showAlertDialog by remember { mutableStateOf(false) }
+    var showSuccessAlertDialog by remember { mutableStateOf(false) }
+    var alertMessage by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -46,12 +53,36 @@ fun LoginScreen(navController: NavHostController) {
 
         Button(
             onClick = {
-                if (email == "admin@gmail.com" && password == "admin123") {
-                    navController.navigate(route = "Screen_2")
-                    showToast = true
-                    email = ""
-                    password = ""
+                if (email.endsWith("@gmail.com") ){
+                    if( password.length >= 4){
+                        alertMessage = "Welcome"
+                        showSuccessAlertDialog = true
+                        navController.navigate(route = "Screen_2")
+                        coroutineScope.launch {
+                            delay(4000)
+                            showSuccessAlertDialog = false
+                        }
+                        email = ""
+                        password = ""
+                    }else{
+                        alertMessage = "Password must be longer than 4 characters"
+                        showAlertDialog = true
+                        coroutineScope.launch {
+                            delay(2500) // Delay for 2 seconds
+                            showAlertDialog = false // Hide AlertDialog after delay
+                        }
+                    }
+
+
+                }else{
+                    alertMessage = "Incorrect email or password"
+                    showAlertDialog = true
+                    coroutineScope.launch {
+                        delay(2500) // Delay for 2 seconds
+                        showAlertDialog = false // Hide AlertDialog after delay
+                    }
                 }
+
             }
         ) {
             Text(text = "Login")
@@ -61,15 +92,33 @@ fun LoginScreen(navController: NavHostController) {
 
         Text(text = "Forgot Password?")
 
-        LaunchedEffect(showToast) {
-            if (showToast) {
-                delay(2000)
-                showToast = false
-            }
+//        LaunchedEffect(showToast) {
+//            if (showToast) {
+//                delay(2000)
+//                showToast = false
+//            }
+//        }
+//
+//        if (showToast) {
+//            Toast(message = "Login Successful")
+//        }
+
+        if (showAlertDialog) {
+            AlertDialog(
+                onDismissRequest = { showAlertDialog = false },
+                title = { Text(text = "Login Error") },
+                text = { Text(alertMessage) },
+                confirmButton = {}
+            )
         }
 
-        if (showToast) {
-            Toast(message = "Login Successful")
+        if (showSuccessAlertDialog){
+            AlertDialog(
+                onDismissRequest = { showAlertDialog = false },
+                title = { Text(text = "Login Success") },
+                text = { Text(alertMessage) },
+                confirmButton = {}
+            )
         }
     }
 }

@@ -1,4 +1,4 @@
-
+// Import statements
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -12,22 +12,22 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.imageResource
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import androidx.navigation.NavController
 import android.graphics.BitmapFactory
 import android.net.Uri
 
+// Composable function for HomePage
 @Composable
 fun HomePage(navController: NavController) {
+    // Mutable state variables to hold data
     var category by remember { mutableStateOf("") }
     var categories by remember { mutableStateOf(listOf<String>()) }
     var selectedCategory by remember { mutableStateOf("") }
@@ -38,14 +38,18 @@ fun HomePage(navController: NavController) {
     var showCategoryDetails by remember { mutableStateOf(false) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
+    // Remembered scroll state
     val scrollState = rememberScrollState()
+    // Context reference
     val context = LocalContext.current
+    // Image picker launcher
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         imageUri = uri
     }
 
+    // Column layout for the HomePage
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,6 +57,7 @@ fun HomePage(navController: NavController) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Title for categories
         Text(
             text = "Categories",
             fontSize = 45.sp,
@@ -62,6 +67,7 @@ fun HomePage(navController: NavController) {
 
         Spacer(modifier = Modifier.height(4.dp))
 
+        // Text field to enter categories
         Text(
             text = "Enter your categories",
             fontSize = 15.sp,
@@ -70,6 +76,7 @@ fun HomePage(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Text field to input category
         OutlinedTextField(
             value = category,
             onValueChange = { category = it },
@@ -78,6 +85,7 @@ fun HomePage(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Button to add category
         Button(
             onClick = {
                 if (category.isNotBlank()) {
@@ -91,6 +99,7 @@ fun HomePage(navController: NavController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // Title for selecting category
         Text(
             text = "Select a Category",
             fontSize = 20.sp,
@@ -98,6 +107,7 @@ fun HomePage(navController: NavController) {
             modifier = Modifier.padding(16.dp)
         )
 
+        // LazyColumn to display categories
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -121,6 +131,7 @@ fun HomePage(navController: NavController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // Add information to selected category
         if (selectedCategory.isNotEmpty()) {
             Text(
                 text = "Add Info to $selectedCategory",
@@ -129,6 +140,7 @@ fun HomePage(navController: NavController) {
                 modifier = Modifier.padding(16.dp)
             )
 
+            // Text fields to input goal, description, and date of acquisition
             OutlinedTextField(
                 value = goal,
                 onValueChange = { goal = it },
@@ -158,6 +170,7 @@ fun HomePage(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Button to launch image picker
             Button(
                 onClick = { imagePickerLauncher.launch("image/*") },
                 modifier = Modifier.padding(16.dp)
@@ -167,6 +180,7 @@ fun HomePage(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Display selected image
             if (imageUri != null) {
                 val bitmap = remember { BitmapFactory.decodeStream(context.contentResolver.openInputStream(imageUri!!)) }
                 Image(
@@ -178,6 +192,7 @@ fun HomePage(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Button to add item to category
             Button(
                 onClick = {
                     if (selectedCategory.isNotEmpty() && goal.isNotEmpty() && imageUri != null) {

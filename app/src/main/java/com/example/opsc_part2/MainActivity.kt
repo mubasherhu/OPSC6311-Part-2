@@ -16,6 +16,7 @@ import com.example.opsc_part2.ui.theme.OPSC_Part2Theme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // setContent is a function used to define the layout of the activity using Jetpack Compose
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
@@ -24,7 +25,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    // NavHost sets up the navigation graph
                     NavHost(navController = navController, startDestination = "Screen_1") {
+                        // Calling the LoginScreen composable and passing the NavController
                         composable(route = "Screen_1") {
                             LoginScreen(navController)
                         }
