@@ -1,21 +1,16 @@
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var showToast by remember { mutableStateOf(false) }
@@ -51,11 +46,9 @@ fun LoginScreen() {
 
         Button(
             onClick = {
-                // Checking if the password and email match
                 if (email == "admin@gmail.com" && password == "admin123") {
-                    // Show toast message for successful login
+                    navController.navigate(route = "Screen_2")
                     showToast = true
-                    // Reset email and password fields
                     email = ""
                     password = ""
                 }
@@ -68,10 +61,9 @@ fun LoginScreen() {
 
         Text(text = "Forgot Password?")
 
-        // Show toast message if showToast is true
         LaunchedEffect(showToast) {
             if (showToast) {
-                delay(2000) // Set the duration for which the toast will be shown (in milliseconds)
+                delay(2000)
                 showToast = false
             }
         }
