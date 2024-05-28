@@ -23,6 +23,10 @@ import coil.request.ImageRequest
 import androidx.navigation.NavController
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Environment
+import androidx.core.content.FileProvider
+import java.io.File
+import java.io.IOException
 
 // Composable function for HomePage
 @Composable
@@ -37,6 +41,7 @@ fun HomePage(navController: NavController) {
     var itemsInCategory by remember { mutableStateOf(mutableMapOf<String, CategoryInfo>()) }
     var showCategoryDetails by remember { mutableStateOf(false) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
 
     // Remembered scroll state
     val scrollState = rememberScrollState()
@@ -47,6 +52,35 @@ fun HomePage(navController: NavController) {
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         imageUri = uri
+    }
+
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success: Boolean ->
+        if (success) {
+            imageUri = cameraImageUri
+        }
+    }
+
+    fun createImageFile(): File? {
+        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return try {
+            File.createTempFile(
+                "JPEG_${System.currentTimeMillis()}_",
+                ".jpg",
+                storageDir
+            ).apply {
+                cameraImageUri = FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.provider",
+                    this
+                )
+            }
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+            null
+        }
     }
 
     // Column layout for the HomePage
@@ -177,6 +211,18 @@ fun HomePage(navController: NavController) {
             ) {
                 Text(text = "Upload Picture")
             }
+            //Button to launch the camera
+            Button(
+                onClick = {
+                    val file = createImageFile()
+                    if (file != null) {
+                        cameraImageUri?.let { cameraLauncher.launch(it) }
+                    }
+                },
+            ) {
+                Text(text = "Take Photo")
+            }
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
